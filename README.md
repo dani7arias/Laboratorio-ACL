@@ -17,7 +17,7 @@ network (ip_red)
 ip route (ip_red) (mascara) (ip_salto)
 ```
 
-## Proteger red
+## ACL
 
 ### Proteger red empresarial:
 
@@ -47,3 +47,18 @@ access-list 101 deny ip any any
 interface (interface)
 ip access-group 101 in
 ```
+
+La primera línea definida en la lista de acceso “101” sólo permite que los usuarios empresariales válidos de la red 10.10.10.0 accedan al router. La segunda línea no se requiere realmente debido al deny all implícito, pero se agregó para facilitar la comprensión.
+
+```bash
+access-list 102 permit tcp any any established
+access-list 102 permit icmp any any echo-reply
+access-list 102 permit icmp any any unreachable
+access-list 102 deny ip any any
+interface (interface)
+ip access-group 102 out
+```
+
+La palabra clave established en esta línea sólo permite el tráfico TCP que se origina en la red 10.10.10.0.
+
+La segunda línea sólo permite que los pings exitosos vuelvan a la red empresarial. La tercera línea permite mostrar los mensajes de los ping que no fueron exitosos.
