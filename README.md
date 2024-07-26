@@ -19,8 +19,6 @@ ip route (ip_red) (mascara) (ip_salto)
 
 ## ACL
 
-### Proteger red empresarial:
-
 numero = 101, 102, etc.
 
 propiedad_permitida = permit, deny, any.
@@ -39,7 +37,7 @@ interface (interface)
 ip access-group (numero) (acceso)
 ```
 
-Ejemplo:
+- Ejemplo 1: Proteger Red Empresarial
 
 ```bash
 access-list 101 permit ip 10.10.10.0 0.0.0.255 any
@@ -62,3 +60,31 @@ ip access-group 102 out
 La palabra clave established en esta línea sólo permite el tráfico TCP que se origina en la red 10.10.10.0.
 
 La segunda línea sólo permite que los pings exitosos vuelvan a la red empresarial. La tercera línea permite mostrar los mensajes de los ping que no fueron exitosos.
+
+- Ejemplo 2: Proteger Red DMZ
+
+```bash
+access-list 111 permit ip 10.1.1.0 0.0.0.255 any
+access-list 111 deny ip any any
+interface (interface)
+ip access-group 111 in
+```
+
+```bash
+access-list 112 permit tcp any host 10.1.1.10 eq www
+```
+
+Esta línea permite que los servicios de la World Wide Web destinados al servidor de Web entren a la red DMZ.
+
+```bash
+access-list 112 permit icmp 10.10.10.0 0.0.0.255 host 10.1.1.10
+```
+
+Esta línea sólo permite que los hosts de la red empresarial hagan ping al servidor de Web.
+
+
+```bash
+access-list 112 deny ip any any
+interface (interface)
+ip access-group 112 out
+```
